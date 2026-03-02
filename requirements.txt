@@ -1,5 +1,7 @@
-# Core YOLO dependencies
+# Core YOLO & Roboflow
 ultralytics
+roboflow
+python-dotenv
 
 # FastAPI Web Services
 fastapi

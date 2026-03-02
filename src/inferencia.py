@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import cv2
 
 def run_inference(image_path, model_path="models/best.pt"):
-    """Script para inferir sobre imágenes nuevas."""
+    """Script para inferir sobre imágenes nuevas con YOLO26."""
     # Cargar el modelo YOLO
     model = YOLO(model_path)
 
