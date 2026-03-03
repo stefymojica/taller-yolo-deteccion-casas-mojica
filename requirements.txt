@@ -1,23 +1,14 @@
-# Core YOLO & Roboflow
 ultralytics
 roboflow
 python-dotenv
-
-# FastAPI Web Services
 fastapi
 uvicorn[standard]
 python-multipart
-
-# Computer Vision & Visualization
 opencv-python
 matplotlib
 pillow
-
-# Data Processing
 pandas
 numpy
 pyyaml
-
-# GUI Support (Optional, recommended for development)
 tqdm
 seaborn
