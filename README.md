@@ -29,7 +29,8 @@ Una vez configurado el ambiente y el `.env`, estos son los comandos principales:
 | **2. Entrenar** | `python src/train_yolo.py` | Inicia entrenamiento local (YOLO26 Medium) |
 | **3. Exportar** | `python src/export_model.py` | Convierte el mejor `best.pt` a `house_detector_prod.onnx` |
 | **4. Inferir** | `python src/inferencia.py` | Prueba el modelo con imágenes de validación |
-| **5. API** | `python src/main_api.py` | Inicia el servidor de despliegue (FastAPI) |
+| **5. Metricas** | `python src/val_metrics.py` | Reporta mAP@0.5, Precision y Recall |
+| **6. API** | `python src/main_api.py` | Inicia el servidor de despliegue (FastAPI) |
 
 ---
 
@@ -76,7 +77,17 @@ Para validar los resultados visualmente:
 python src/inferencia.py
 ```
 
-### 7. Despliegue (API con FastAPI)
+### 7. Reporte de Métricas
+Para obtener un reporte detallado del rendimiento en el conjunto de validación:
+```bash
+python src/val_metrics.py
+```
+Este script mostrará:
+*   **Precision**: Capacidad del modelo para no etiquetar como positiva una muestra negativa.
+*   **Recall**: Capacidad del modelo para encontrar todas las muestras positivas.
+*   **mAP@0.5**: Error promedio de precisión a un umbral de IoU de 0.5.
+
+### 8. Despliegue (API con FastAPI)
 Crea un servidor web para procesar imágenes a través de una API. El endpoint devolverá la imagen con las cajas y scores:
 ```bash
 python src/main_api.py
