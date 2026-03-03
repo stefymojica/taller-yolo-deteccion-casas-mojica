@@ -19,10 +19,23 @@ taller-yolo-casas/
 └── README.md
 ```
 
-## Guía de Uso (Paso a Paso)
+## 🚀 Comandos Rápidos
+
+Una vez configurado el ambiente y el `.env`, estos son los comandos principales:
+
+| Paso | Comando | Descripción |
+| :--- | :--- | :--- |
+| **1. Descargar** | `python src/download_dataset.py` | Baja el dataset de Roboflow a `/dataset` |
+| **2. Entrenar** | `python src/train_yolo.py` | Inicia entrenamiento local (YOLO26 Medium) |
+| **3. Exportar** | `python src/export_model.py` | Convierte el mejor `best.pt` a `house_detector_prod.onnx` |
+| **4. Inferir** | `python src/inferencia.py` | Prueba el modelo con imágenes de validación |
+
+---
+
+## Guía de Uso Detallada
 
 ### 1. Configuración Inicial
-Primero, instala las dependencias necesarias en tu ambiente virtual:
+Instala las dependencias en tu ambiente virtual:
 ```bash
 python3 -m venv venv
 source venv/bin/activate
@@ -30,7 +43,7 @@ pip install -r requirements.txt
 ```
 
 ### 2. Configurar Credenciales
-Crea un archivo `.env` en la raíz (si no existe) y agrega tus claves de Roboflow:
+Crea un archivo `.env` en la raíz con tus claves de Roboflow:
 ```text
 ROBOFLOW_API_KEY=tu_api_key_aqui
 ROBOFLOW_WORKSPACE=tu_workspace
@@ -38,26 +51,26 @@ ROBOFLOW_PROJECT=tu_proyecto
 ROBOFLOW_VERSION=2
 ```
 
-### 3. Descargar el Dataset
-Ejecuta el script para bajar las imágenes y etiquetas desde Roboflow:
+### 3. Descarga de Datos
+Para obtener las imágenes etiquetadas:
 ```bash
 python src/download_dataset.py
 ```
 
-### 4. Entrenamiento
-Tienes dos opciones para el entrenamiento:
-*   **Local:** Ejecuta `python src/train_yolo.py`. Los resultados quedarán en la carpeta `runs/`.
-*   **Google Colab:** Entrena en la nube y descarga el archivo `best.pt`. Guárdalo en `models/best_colab.pt`.
+### 4. Entrenamiento del Modelo
+Puedes entrenar localmente o en la nube:
+*   **Local:** `python src/train_yolo.py`. Los resultados se guardan en `runs/detect/train_casasX`.
+*   **Google Colab:** Si entrenas en Colab, descarga el `best.pt` y colócalo en `models/best_colab.pt`.
 
-### 5. Exportar para Producción (Alta Velocidad)
-Para que el modelo corra rápido en tu CPU o en una API, conviértelo al formato ONNX:
+### 5. Exportación a Producción (Optativo pero Recomendado)
+Para optimizar el modelo para CPUs o servidores:
 ```bash
 python src/export_model.py
 ```
-*Este script priorizará el entrenamiento local más reciente y usará el de Colab como respaldo.*
+*El script detectará automáticamente el entrenamiento más reciente o el archivo de Colab.*
 
-### 6. Probar Inferencia
-Finalmente, prueba que el modelo esté detectando casas correctamente:
+### 6. Ejecución de Inferencia
+Para validar los resultados visualmente:
 ```bash
 python src/inferencia.py
 ```
