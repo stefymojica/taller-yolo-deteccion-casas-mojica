@@ -39,10 +39,27 @@ Una vez configurado el ambiente y el `.env`, estos son los comandos principales:
 ### 1. Configuración Inicial
 Instala las dependencias en tu ambiente virtual:
 ```bash
+#py -3.10 -m venv venv
 python3 -m venv venv
 source venv/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
+### Verifica entornos con el fin entrenar con GPU propias debe responder en true
+import torch
+print(torch.__version__)
+print(torch.cuda.is_available())
+### Instalacio manual de pytouch
+pip uninstall torch torchvision torchaudio -y   # Elimina versiones antiguas
+pip list | findstr torch    #verifica que no quede versiones antiguas
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121     #Instala pytouch
+python          #verifica que todo este bien y activo como respuesta de 2.5.x+cu121 y True
+import torch
+print(torch.__version__)
+print(torch.cuda.is_available())
+## Si indica true se continua con
+pip install ultralytics --no-deps   #instala ultralytics
+pip install opencv-python matplotlib numpy pyyaml scipy tqdm seaborn pandas #Ultimas dependencias faltantes
 
 ### 2. Configurar Credenciales
 Crea un archivo `.env` en la raíz con tus claves de Roboflow:
