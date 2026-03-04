@@ -114,8 +114,8 @@ Decidimos entonces dividir mejor el conjunto de datos, aumentar el conjunto de p
 Los resultados mejoraron, aunque el modelo sigue teniendo muchas limitaciones. Según la nueva matriz de confusión normalizada, ahora detectamos el 35% de las casas correctamente (+22%) y pasamos de 85% de falsos negativos al 65%. 
 
 ```markdown
-![Matriz de confusión con 41 imágenes](ejemplos/matriz1.png)
-![Matriz de confusión con 123 imágenes](ejemplos/matriz2.png)
+![Matriz de confusión con 41 imágenes](https://raw.githubusercontent.com/stefymojica/taller-yolo-deteccion-casas-mojica/25c08864780cd8cd38aec65e75eb86d47d39c4cd/ejemplos/matriz1.png)
+![Matriz de confusión con 123 imágenes](https://raw.githubusercontent.com/stefymojica/taller-yolo-deteccion-casas-mojica/25c08864780cd8cd38aec65e75eb86d47d39c4cd/ejemplos/matriz2.png)
 ```
 
 Las métricas generales, con el segundo modelo, quedaron así:
@@ -131,9 +131,9 @@ Las métricas generales, con el segundo modelo, quedaron así:
 Algunos ejemplos de detección evidencian que hubo avances pero aún encuentra casas fantasma donde el fondo o el contexto son ruidosos, como en la naturaleza:
 
 ```markdown
-![Casa en el bosque](ejemplos/casa_en_el_bosque.png)
-![Casa en la montaña](ejemplos/casa_en_la_montana.png)
-![Múltiples fachadas](ejemplos/multiples_fachadas.png)
+![Casa en el bosque](https://raw.githubusercontent.com/stefymojica/taller-yolo-deteccion-casas-mojica/25c08864780cd8cd38aec65e75eb86d47d39c4cd/ejemplos/casa_en_el_bosque.png)
+![Casa en la montaña](https://raw.githubusercontent.com/stefymojica/taller-yolo-deteccion-casas-mojica/version2/ejemplos/casa_en_la_montana.png)
+![Múltiples fachadas](https://raw.githubusercontent.com/stefymojica/taller-yolo-deteccion-casas-mojica/25c08864780cd8cd38aec65e75eb86d47d39c4cd/ejemplos/multiples_fachadas.png)
 ```
 
 ---
