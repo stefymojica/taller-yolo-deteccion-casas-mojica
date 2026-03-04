@@ -5,8 +5,9 @@ def train():
 
     results = model.train(
         data="dataset/data.yaml",
-        epochs=25,
+        epochs=100,
         imgsz=640,
+        patience=20, # early stopping
         name="train_casas"
     )
 
