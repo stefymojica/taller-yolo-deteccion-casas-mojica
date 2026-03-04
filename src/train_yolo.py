@@ -5,9 +5,12 @@ def train():
 
     results = model.train(
         data="dataset/data.yaml",
-        epochs=25,
+        epochs=50,
         imgsz=640,
-        name="train_casas"
+        name="train_casas",
+        batch=16,
+        workers=4,
+        device=0
     )
 
     # Reportar métricas finales
