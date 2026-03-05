@@ -27,6 +27,10 @@ def train():
         fliplr=0.5,  # Horizontal flip
         mosaic=1.0,  # Mosaic augmentation
         mixup=0.0,  # Mixup augmentation
+        #batch=16,    #para GPU
+        #workers=4,   #para GPU
+        #device=0,    #para GPU
+        
     )
 
     # Reportar métricas finales
