@@ -64,6 +64,10 @@ Puedes entrenar localmente o en la nube:
 *   **Local:** `python src/train_yolo.py`. Los resultados se guardan en `runs/detect/train_casasX`.
 *   **Google Colab:** Si entrenas en Colab, descarga el `best.pt` y colócalo en `models/best_colab.pt`.
 
+##Nota: Si el entrenamiento es local se recomienda tener una aceleradora grafica para que el proceso sea más rápido, pero se debe instalar las dependencias de pytorch y hacer que Python reconozca GPU por medio de esta librería.
+Con una acelerado nvidia puede verificar que este reconocida y configurada con el siguiente comando desde powerShell: nvidia-smi. En “requirements.txt” se encuentran todas las dependencias para activar al GPU, a momento están comentadas ya que tomaría mucho tiempo en cargar y dependiendo de la modalidad de entrenamiento no se utilicen; además se debe descomentar en train_tolo.py – results, lo correspondiente a GPU, no olvidar las comas
+
+
 ### 5. Exportación a Producción (Optativo pero Recomendado)
 Para optimizar el modelo para CPUs o servidores:
 ```bash
