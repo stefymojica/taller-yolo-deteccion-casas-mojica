@@ -8,7 +8,7 @@ def download():
     api_key = os.getenv("ROBOFLOW_API_KEY")
     workspace = os.getenv("ROBOFLOW_WORKSPACE")
     project_name = os.getenv("ROBOFLOW_PROJECT")
-    version_num = int(os.getenv("ROBOFLOW_VERSION", 1))
+    version_num = int(os.getenv("ROBOFLOW_VERSION", 2))
 
     if not api_key:
         print("Error: ROBOFLOW_API_KEY no encontrada en el archivo .env")
@@ -17,9 +17,9 @@ def download():
     rf = Roboflow(api_key=api_key)
     project = rf.workspace(workspace).project(project_name)
     version = project.version(version_num)
-    
+
     print(f"Iniciando descarga de la versión {version_num}...")
-    dataset = version.download("yolo26", location="./dataset")
+    dataset = version.download("yolov8", location="./dataset")
     print(f"¡Hecho! Dataset descargado en: {dataset.location}")
 
 if __name__ == "__main__":

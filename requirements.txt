@@ -1,9 +1,10 @@
 ultralytics
 roboflow
 python-dotenv
-fastapi
-uvicorn[standard]
-python-multipart
+simple-lama-inpainting
+torch
+torchvision
+
 opencv-python
 matplotlib
 pillow

@@ -1,148 +1,125 @@
-# Taller de Detección de Casas con YOLO26
+# Taller de Detección de Casas e Inpainting con YOLOv8
 
 ## 1. Descripción del dataset y origen de imágenes
 
-El conjunto de datos está compuesto originalmente por 58 fotografías de fachadas de casas tomadas en diversas ciudades de Colombia. Las imágenes fueron recopiladas a partir de fuentes públicas (prensa digital de Medellín y bogotá, imágenes sin licenciamiento rastreadas por Google) y contribuciones propias en pueblos colombianos. Fueron etiquetadas manualmente para marcar las áreas donde se observa una fachada en la plataforma Roboflow.
+El conjunto de datos está compuesto originalmente por 58 fotografías de fachadas de casas tomadas en diversas ciudades de Colombia. Las imágenes fueron capturadas a diferentes horas del día y desde distintos ángulos para maximizar la variabilidad visual.
 
-El formato utilizado es YOLO (imagen + archivo `.txt` con coordenadas normalizadas de las cajas). Además, el dataset se dividió en 70% `train` (41), 20% `valid` (12) y 10% `test` (10).
+Las imágenes fueron anotadas de forma manual con la herramienta Roboflow, identificando dos tipos de objetos:
+- **casa** — fachada visible de la vivienda
+- **poste** — postes de luz o similares en la escena
 
-Finalmente, aumentamos el conjunto de entrenamiento aplicando ruido y volteando las imágenes horizontalmente, con lo cual este quedó constituido por 123 imágenes.
-
-## 2. Instrucciones para reproducir el entrenamiento y la inferencia
-
-## Estructura del Proyecto
-
-```text
-taller-yolo-casas/
-├── src/
-│   ├── download_dataset.py
-│   ├── train_yolo.py
-│   ├── export_model.py
-│   ├── inferencia.py
-│   └── utils.py
-├── models/
-├── ejemplos/
-├── requirements.txt
-├── .env
-├── data.yaml
-└── README.md
-```
-
-## 🚀 Comandos Rápidos
-
-Una vez configurado el ambiente y el `.env`, estos son los comandos principales:
-
-| Paso | Comando | Descripción |
-| :--- | :--- | :--- |
-| **1. Descargar** | `python src/download_dataset.py` | Baja el dataset de Roboflow a `/dataset` |
-| **2. Entrenar** | `python src/train_yolo.py` | Inicia entrenamiento local (YOLO26 Medium) *si tienes el modelo entrenado, solo agrégalo como se indica en el apartado 4. |
-| **3. Exportar** | `python src/export_model.py` | Convierte el mejor `best.pt` a `house_detector_prod.onnx` |
-| **4. Inferir** | `python src/inferencia.py` | Prueba el modelo con imágenes de validación |
-| **5. Metricas** | `python src/val_metrics.py` | Reporta mAP@0.5, Precision y Recall |
-| **6. API** | `python src/main_api.py` | Inicia el servidor de despliegue (FastAPI) |
+El dataset se almacena en Roboflow bajo el proyecto **`proyecto_casas_y_postes`** (versión 2) y se exporta en formato **YOLOv8**.
 
 ---
 
-## Guía de Uso Detallada
+## 2. Estructura del proyecto
 
-### 1. Configuración Inicial
-Instala las dependencias en tu ambiente virtual:
+```
+taller-yolo-casas/
+├── src/
+│   ├── download_dataset.py   # Descarga el dataset desde Roboflow (v2)
+│   ├── train_yolo.py         # Entrena YOLOv8m (100 epochs, AdamW, augmentaciones avanzadas)
+│   ├── export_model.py       # Exporta el modelo a ONNX (opcional)
+│   ├── inferencia.py         # Ejecuta inferencia sobre imágenes nuevas
+│   ├── inpainting.py         # Detecta postes → crea máscara → LaMa inpainting
+│   └── val_metrics.py        # Evalúa el modelo con métricas por clase
+├── models/
+│   └── best_colab.pt         # Modelo pre-entrenado en Colab (listo para usar)
+├── .env                      # Credenciales de Roboflow
+├── requirements.txt          # Dependencias
+└── README.md                 # Este archivo
+```
+
+---
+
+## 3. Requisitos previos
+
+- Python 3.9+
+- `pip` o `pip3`
+
+---
+
+## 4. Instalación
+
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+# Crear entorno virtual
+python -m venv venv
+source venv/bin/activate   # Linux/Mac
+
+# Instalar dependencias
 pip install -r requirements.txt
 ```
 
-### 2. Configurar Credenciales
-Crea un archivo `.env` en la raíz con las credenciales de Roboflow:
-```text
-ROBOFLOW_API_KEY=tu_api_key_aqui
-ROBOFLOW_WORKSPACE=tu_workspace
-ROBOFLOW_PROJECT=tu_proyecto
-ROBOFLOW_VERSION=4
-```
+---
 
-### 3. Descarga de Datos
-Para obtener las imágenes etiquetadas:
+## 5. Ejecución rápida (modelo ya incluido)
+
+El modelo pre-entrenado (`models/best_colab.pt`) ya está incluido en el repositorio, por lo que **no es necesario entrenar**. Solo se necesitan 3 pasos:
+
+| # | Paso | Comando |
+|---|------|---------|
+| 1 | Descargar dataset (imágenes de prueba) | `python src/download_dataset.py` |
+| 2 | Inferencia (detectar casas y postes) | `python src/inferencia.py` |
+| 3 | Inpainting (eliminar postes) | `python src/inpainting.py` |
+
+Los resultados se guardan en la carpeta `resultados/`.
+
+---
+
+## 6. Guía detallada paso a paso
+
+### Paso 1: Descargar el dataset
+
 ```bash
 python src/download_dataset.py
 ```
 
-### 4. Entrenamiento del Modelo
-Puedes entrenar localmente o en la nube:
-*   **Local:** `python src/train_yolo.py`. Los resultados se guardan en `runs/detect/train_casasX`.
-*   **Google Colab:** Si entrenas en Colab, descarga el `best.pt` y colócalo en `models/` renombrado como `best_colab.pt`.
+Descarga el dataset versión **2** del proyecto `proyecto_casas_y_postes` en formato **YOLOv8** a la carpeta `dataset/`. Las imágenes de validación se usan para probar la inferencia y el inpainting.
 
-### 5. Exportación a Producción (Optativo pero Recomendado)
-Para optimizar el modelo para CPUs o servidores:
-```bash
-python src/export_model.py
-```
-*El script detectará automáticamente el entrenamiento más reciente o el archivo de Colab.*
+### Paso 2: Inferencia (detectar casas y postes)
 
-### 6. Ejecución de Inferencia
-Para validar los resultados visualmente:
 ```bash
 python src/inferencia.py
 ```
 
-### 7. Reporte de Métricas
-Para obtener un reporte detallado del rendimiento en el conjunto de validación:
+Usa el modelo `models/best_colab.pt` para detectar casas y postes en las imágenes de validación. Guarda las predicciones visuales (con cajas de detección) en `resultados/`.
+
+### Paso 3: Inpainting (eliminar postes)
+
 ```bash
-python src/val_metrics.py
-```
-Este script mostrará:
-*   **Precision**: Capacidad del modelo para no etiquetar como positiva una muestra negativa.
-*   **Recall**: Capacidad del modelo para encontrar todas las muestras positivas.
-*   **mAP@0.5**: Error promedio de precisión a un umbral de IoU de 0.5.
-
-### 8. Despliegue (API con FastAPI)
-Crea un servidor web para procesar imágenes a través de una API. El endpoint devolverá la imagen con las cajas y scores:
-```bash
-python src/main_api.py
-```
-*   **Endpoint:** `POST /predict`
-*   **Documentación Interactiva:** Una vez encendida, entra a `http://localhost:8000/docs` para probarla subiendo una imagen desde el navegador.
-
-
-## 3. Resultados (métricas) y ejemplos de detección
-
-Entrenamos el modelo de distintas maneras. Inicialmente solo dejamos una imagen para validación y esto provocó que el modelo nos arrojara erróneamente métricas de validación excepcionalmente altas a pesar de que confundía las casas con el fondo el 87% de las veces y las detectaba correctamente solo el 13%.
-
-Decidimos entonces dividir mejor el conjunto de datos, aumentar el conjunto de prueba x3 y reentrenar aumentando las épocas (pasamos de 25 a 100). 
-
-Los resultados mejoraron, aunque el modelo sigue teniendo muchas limitaciones. Según la nueva matriz de confusión normalizada, ahora detectamos el 35% de las casas correctamente (+22%) y pasamos de 85% de falsos negativos al 65%. 
-
-Las métricas generales, con el segundo modelo, quedaron así:
-
-```markdown
-| Métrica    | Valor  |
-|------------|--------|
-| Precision  | 0.49   |
-| Recall     | 0.38   |
-| mAP@0.5    | 0.35   |
+python src/inpainting.py [ruta_imagen_opcional]
 ```
 
-Algunos ejemplos de detección evidencian que hubo avances pero aún encuentra casas fantasma donde el fondo o el contexto son ruidosos, como en la naturaleza:
+Proceso:
+1. Carga el modelo `models/best_colab.pt`
+2. Detecta postes en la imagen
+3. Crea máscara binaria (solo postes)
+4. Dilata la máscara (kernel 2×2) para cubrir bordes
+5. Aplica **LaMa inpainting** para eliminar los postes
+6. Guarda el resultado en `resultados/`
 
-<img width="958" height="640" alt="casa_en_el_bosque" src="https://github.com/user-attachments/assets/15b290fe-fc14-49db-a6a2-2442b29ff8f5" />
-<img width="314" height="312" alt="casa_en_la_montana" src="https://github.com/user-attachments/assets/5d8558f4-724b-4691-9dd7-302939ec2c09" />
-<img width="589" height="409" alt="multiples_fachadas" src="https://github.com/user-attachments/assets/cf73f88b-1917-41d8-87e0-24e28d8dba31" />
+Si no se pasa una imagen, usa automáticamente la primera imagen de `dataset/valid/images/`.
 
 ---
 
-## 4. Limitaciones y pasos futuros recomendados
+## 7. Modelo pre-entrenado
 
-- El modelo actual sólo reconoce una clase genérica de "casa"; sin embargo el etiquetado tan generalista obliga a combinar formas que pueden ser muy distintas y por eso sería útil ampliar a subtipos (finca, apartamento, casa urbana, casa rural, etc.)
-- Las imágenes están sesgadas hacia ciertas regiones geográficas, lo que podría afectar la generalización. Sería útil no solo tener más imágenes sino imágenes más diversas también, sobretodo aquellas donde el contexto y el fondo son ruidosos o donde las casas están juntas.
-- No se han probado técnicas de aumento avanzadas ni modelos más grandes por falta de recursos.
+El archivo `models/best_colab.pt` contiene el modelo entrenado en **Google Colab** con GPU Tesla T4. Fue entrenado con **YOLOv8 Medium** (`yolov8m.pt`), 100 epochs, optimizador AdamW, y augmentaciones avanzadas. Resultados:
+
+| Clase | Precision | Recall | mAP50 | mAP50-95 |
+|-------|-----------|--------|-------|----------|
+| casa  | 0.736     | 0.296  | 0.473 | 0.299    |
+| poste | 0.783     | 0.318  | 0.578 | 0.325    |
+| **all** | **0.759** | **0.307** | **0.525** | **0.312** |
 
 ---
 
-> **Nota sobre Git:** Los archivos `.env`, la carpeta `dataset/`, la carpeta `runs/` y los modelos `.pt` están configurados en el `.gitignore` para no ser subidos al repositorio por seguridad y eficiencia.
+## 8. Scripts adicionales (opcionales)
 
-👥 Autores
+Estos scripts solo son necesarios si se desea **re-entrenar** el modelo o evaluarlo:
 
-    Sara Castillejo - scastillejoditta
-    Stefany Mojica - stefymojica
-    Alexander Pineda - alexpineda
+| Script | Descripción |
+|--------|-------------|
+| `python src/train_yolo.py` | Re-entrena el modelo desde cero (requiere GPU) |
+| `python src/val_metrics.py` | Evalúa métricas por clase (casa, poste) |
+| `python src/export_model.py` | Exporta a ONNX para producción |

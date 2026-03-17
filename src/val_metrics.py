@@ -17,45 +17,41 @@ def validate():
             print(f"Usando modelo de Colab: {colab_model}")
             return colab_model
 
-        print("No se encontró un modelo entrenado. Usando modelo base yolo26m.pt")
-        return "yolo26m.pt"
+        print("No se encontró un modelo entrenado. Usando modelo base yolov8m.pt")
+        return "yolov8m.pt"
 
     model_path = find_best_model()
     model = YOLO(model_path)
 
     print(f"\n--- Iniciando validación con el modelo: {model_path} ---")
-    print("--- Evaluando en TEST SET ---")
 
-    # EVAL-01: Evaluar en test set separado
-    results = model.val(data="dataset/data.yaml", split="test")
-
-    # EVAL-02: Extraer métricas mAP50-95 y mAP50
-    map50_95 = results.results_dict.get("metrics/mAP50-95(B)", 0)
-    map50 = results.results_dict.get("metrics/mAP50(B)", 0)
-    precision = results.results_dict.get("metrics/precision(B)", 0)
-    recall = results.results_dict.get("metrics/recall(B)", 0)
-
-    # EVAL-04: Calcular F1-score para clase "casa"
-    f1 = (
-        2 * (precision * recall) / (precision + recall)
-        if (precision + recall) > 0
-        else 0
+    # Evaluar sobre el set de validación (como en el notebook V1)
+    metrics = model.val(
+        data="dataset/data.yaml",
+        imgsz=640,
+        conf=0.25,
+        iou=0.5,
+        split="val",
     )
 
-    print("\n" + "=" * 50)
-    print("      REPORTE DE MÉTRICAS (TEST SET)")
+    # --- Métricas por clase ---
+    print("\n📊 MÉTRICAS POR CLASE")
     print("=" * 50)
-    print(f"Precision:       {precision:.4f}")
-    print(f"Recall:          {recall:.4f}")
-    print(f"mAP@0.5:         {map50:.4f}")
-    print(f"mAP@0.5:0.95:    {map50_95:.4f}")
-    print(f"F1-Score:        {f1:.4f}")
-    print("=" * 50)
-    print("Clase: casa")
-    print("-" * 50)
+    names = model.names
+    for i, name in names.items():
+        print(f"\n🔹 Clase: {name}")
+        print(f"   Precision : {metrics.box.p[i]:.3f}")
+        print(f"   Recall    : {metrics.box.r[i]:.3f}")
+        print(f"   mAP50     : {metrics.box.ap50[i]:.3f}")
+        print(f"   mAP50-95  : {metrics.box.ap[i]:.3f}")
 
-    # EVAL-03: Curvas generadas automáticamente por Ultralytics
-    print(f"\nCurvas y resultados guardados en: runs/detect/val12/")
+    # --- Métricas globales ---
+    print("\n📊 MÉTRICAS GLOBALES")
+    print("=" * 50)
+    print(f"   mAP50     : {metrics.box.map50:.3f}")
+    print(f"   mAP50-95  : {metrics.box.map:.3f}")
+
+    print(f"\nCurvas y resultados guardados en: {metrics.save_dir}")
     print("Archivos generados: PR curve, F1 curve, confusion matrix, etc.")
 
 
