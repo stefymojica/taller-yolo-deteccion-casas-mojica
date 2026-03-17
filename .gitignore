@@ -115,3 +115,7 @@ datasets/
 yolo26*.pt
 yolov8*.pt
 
+# allow tracking of models folder even though we ignore most .pt files
+!models/
+!models/**
+

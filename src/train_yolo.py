@@ -7,26 +7,10 @@ def train():
 
     results = model.train(
         data="dataset/data.yaml",
-        epochs=100,  # TRAIN-03: 100 epochs
-        imgsz=1280,  # TRAIN-04: resolución 1280px
-        optimizer="SGD",  # TRAIN-05: optimizer SGD
-        momentum=0.937,  # TRAIN-05: momentum para SGD
-        name="train_casas",
-        # TRAIN-03: Early stopping con patience=20
-        patience=20,
-        # TRAIN-01: Data augmentation habilitada
-        hsv_h=0.015,  # Hue augmentation
-        hsv_s=0.7,  # Saturation augmentation
-        hsv_v=0.4,  # Value augmentation
-        degrees=0.0,  # Rotation
-        translate=0.1,  # Translation
-        scale=0.5,  # Scaling
-        shear=0.0,  # Shearing
-        perspective=0.0,  # Perspective
-        flipud=0.0,  # Vertical flip
-        fliplr=0.5,  # Horizontal flip
-        mosaic=1.0,  # Mosaic augmentation
-        mixup=0.0,  # Mixup augmentation
+        epochs=100,
+        imgsz=640,
+        patience=20, # early stopping
+        name="train_casas"
     )
 
     # Reportar métricas finales
