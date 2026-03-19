@@ -1,14 +1,24 @@
 # Taller de Detección de Casas e Inpainting con YOLOv8
 
+**Estudiantes:** Stefany Mojica, Sara Castillejo y Alexander Pineda
+*Maestría en Matemáticas Aplicadas y Ciencias de la Computación*
+Universidad del Rosario
+Bogotá D.C.
+2026/2  
+
 ## 1. Descripción del dataset y origen de imágenes
 
-El conjunto de datos está compuesto originalmente por 58 fotografías de fachadas de casas tomadas en diversas ciudades de Colombia. Las imágenes fueron capturadas a diferentes horas del día y desde distintos ángulos para maximizar la variabilidad visual.
+El conjunto de datos está compuesto por 92 fotografías de fachadas de casas y de postes de luz en contextos urbanos que se dividieron en 83 de entrenamiento, 6 de validación y 3 de prueba.
 
-Las imágenes fueron anotadas de forma manual con la herramienta Roboflow, identificando dos tipos de objetos:
+Las imágenes fueron anotadas de forma manual con la herramienta Roboflow, identificando dos clases de objetos:
 - **casa** — fachada visible de la vivienda
 - **poste** — postes de luz o similares en la escena
 
-El dataset se almacena en Roboflow bajo el proyecto **`proyecto_casas_y_postes`** (versión 2) y se exporta en formato **YOLOv8**.
+En el preprocesamiento, redimensionamos las imágenes para que se ajustaran a un máximo de 512px en su lado más ancho (Resize Fit within 512x512). 
+
+Además, se aplicamos augmentation de Flip Horizontal, Grayscale y Camera Gain (0.9).
+
+El dataset se etiquetó y preprocesó en un proyecto llamado **`proyecto_casas_y_postes`** (versión 2) en la plataforma Roboflow. Se exportó en formato **YOLOv8**.
 
 ---
 
@@ -25,7 +35,7 @@ taller-yolo-casas/
 │   └── export_model.py       # Exporta el modelo a ONNX (opcional)
 ├── models/
 │   └── best_colab.pt         # Modelo pre-entrenado en Colab (backup)
-├── .env                      # Credenciales de Roboflow
+├── .env                      # Credenciales de Roboflow -se envían adjuntas al entregable en Eaulas.
 ├── requirements.txt          # Dependencias
 └── README.md                 # Este archivo
 ```
@@ -36,23 +46,36 @@ taller-yolo-casas/
 
 - Python 3.9+
 - `pip` o `pip3`
+- archivo .env adjunto en Eaulas
 
 ---
 
 ## 4. Instalación
 
 ```bash
+#Clonar repositorio
+git clone https://github.com/stefymojica/taller-yolo-deteccion-casas-mojica.git
+
+#Verificar que tienes la última versión
+git fetch origin
+
+#Cambiarte a la rama del proyecto
+git checkout inpainting
+
 # Crear entorno virtual
 python -m venv venv
+source venv/Scripts/activate
 source venv/bin/activate   # Linux/Mac
 
-# Instalar dependencias
+# Instalar dependencias en el ambiente virtual de Python
 pip install -r requirements.txt
 ```
 
 ---
 
 ## 5. Ejecución rápida (modelo ya incluido)
+
+Antes que nada, **es necesario pegar el archivo .env que se descarga de la plataforma Eaulas en la raiz del directorio**. Una vez hecho esto, podemos proceder con la ejecución.
 
 El repositorio incluye `models/best_colab.pt`, un modelo **ya entrenado en Google Colab**. Si se desea ver los resultados sin entrenar, solo se necesitan **3 comandos**:
 
@@ -64,6 +87,11 @@ python src/inpainting.py             # 3. Eliminar postes con inpainting
 
 Los resultados se guardan en la carpeta `resultados/`.
 
+Para probar con imágenes diferentes, se pueden usar otras de conjunto de validación o pruebas, así:
+
+```bash
+python src/inpainting.py "ruta/de/la/imagen.jpg"    
+```
 ---
 
 ## 6. Pipeline completo desde cero (paso a paso)

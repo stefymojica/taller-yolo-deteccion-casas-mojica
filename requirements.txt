@@ -1,15 +1,25 @@
-ultralytics
+# Detección y entrenamiento
+ultralytics==8.4.23
+
+# Dataset
 roboflow
 python-dotenv
-simple-lama-inpainting
-torch
-torchvision
 
-opencv-python
-matplotlib
+# Inpainting
+simple-lama-inpainting==0.1.2
+
+# Deep learning
+torch==2.10.0
+torchvision==0.25.0
+
+# Visión y utilidades
+opencv-python-headless==4.10.0.84
 pillow
-pandas
 numpy
+
+# Visualización y análisis
+matplotlib
+pandas
 pyyaml
 tqdm
 seaborn

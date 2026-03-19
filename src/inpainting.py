@@ -3,10 +3,9 @@ import sys
 import glob
 import cv2
 import numpy as np
-import torch
 from PIL import Image
 from ultralytics import YOLO
-
+from simple_lama_inpainting import SimpleLama
 
 def find_best_model():
     """Busca el mejor modelo entrenado disponible."""
@@ -21,20 +20,6 @@ def find_best_model():
         return colab_model
 
     return "yolov8m.pt"
-
-
-def load_lama_model():
-    """Carga el modelo LaMa forzando CPU (compatible con Mac sin CUDA)."""
-    from simple_lama_inpainting.utils import download_model
-
-    lama_url = "https://github.com/enesmsahin/simple-lama-inpainting/releases/download/v0.1.0/big-lama.pt"
-    model_path = download_model(lama_url)
-
-    # Forzar carga en CPU (el modelo fue guardado con CUDA)
-    model = torch.jit.load(model_path, map_location="cpu")
-    model.eval()
-    return model
-
 
 def remove_postes(image_path, model_path=None, output_dir="resultados"):
     """
@@ -87,23 +72,15 @@ def remove_postes(image_path, model_path=None, output_dir="resultados"):
     kernel = np.ones((2, 2), np.uint8)
     mask = cv2.dilate(mask, kernel, iterations=1)
 
-    # 5. Aplicar inpainting con LaMa (forzando CPU)
+    # 5. Aplicar inpainting con LaMa (compatible con CPU)
     print("--- Aplicando inpainting (LaMa)... ---")
-    lama_model = load_lama_model()
 
-    # Preparar imagen y máscara como tensores
-    from simple_lama_inpainting.utils import prepare_img_and_mask
     image_pil = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-    mask_pil = Image.fromarray(mask)
-    device = torch.device("cpu")
-    img_tensor, mask_tensor = prepare_img_and_mask(image_pil, mask_pil, device)
+    mask_pil  = Image.fromarray(mask)
 
-    with torch.inference_mode():
-        inpainted = lama_model(img_tensor, mask_tensor)
-        result_np = inpainted[0].permute(1, 2, 0).detach().cpu().numpy()
-        result_np = np.clip(result_np * 255, 0, 255).astype(np.uint8)
-        # Convertir de RGB a BGR para guardar con OpenCV
-        result_np = cv2.cvtColor(result_np, cv2.COLOR_RGB2BGR)
+    lama   = SimpleLama()
+    result = lama(image_pil, mask_pil)
+    result_np = cv2.cvtColor(np.array(result), cv2.COLOR_RGB2BGR)
 
     # 6. Guardar resultado
     os.makedirs(output_dir, exist_ok=True)

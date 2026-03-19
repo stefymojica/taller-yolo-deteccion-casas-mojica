@@ -22,5 +22,6 @@ def download():
     dataset = version.download("yolov8", location="./dataset")
     print(f"¡Hecho! Dataset descargado en: {dataset.location}")
 
+
 if __name__ == "__main__":
     download()
